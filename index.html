@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Every Corner Green: Urban greening for every neighborhood</title>
+<meta name="description" content="Every Corner Green turns overlooked urban lots into pocket parks, block by block, for every neighborhood, not just the ones that can already afford it.">
+<link rel="icon" type="image/png" href="every-corner-green-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --canopy:#1C3D2E;
+    --canopy-deep:#142C21;
+    --sprout:#74B05D;
+    --sprout-light:#8FCB72;
+    --pavement:#F4F1E8;
+    --concrete:#E7E1D2;
+    --ink:#23211E;
+    --ink-soft:#5B5A53;
+    --brass:#B98B2E;
+    --line:#D8D1BD;
+    --max:1180px;
+    --serif:'Fraunces', serif;
+    --sans:'Inter', sans-serif;
+    --mono:'IBM Plex Mono', monospace;
+  }
+ 
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    background:var(--pavement);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  img,svg{display:block;max-width:100%;}
+  a{color:inherit;text-decoration:none;}
+  ul{list-style:none;}
+  button{font:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 32px;}
+  :focus-visible{outline:2px solid var(--brass);outline-offset:3px;}
+ 
+  h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:-0.01em;color:var(--canopy);}
+  .eyebrow{
+    font-family:var(--mono);font-size:13px;letter-spacing:0.14em;text-transform:uppercase;
+    color:var(--sprout);font-weight:500;display:flex;align-items:center;gap:10px;margin-bottom:18px;
+  }
+  .eyebrow::before{content:'';width:18px;height:2px;background:var(--sprout);display:inline-block;}
+ 
+  /* ---------- Corner-bracket signature element ---------- */
+  .framed{position:relative;}
+  .framed::before,.framed::after{
+    content:'';position:absolute;width:16px;height:16px;
+    transition:width .45s cubic-bezier(.2,.8,.2,1), height .45s cubic-bezier(.2,.8,.2,1);
+    pointer-events:none;
+  }
+  .framed::before{top:0;left:0;border-top:2.5px solid var(--sprout);border-left:2.5px solid var(--sprout);}
+  .framed::after{bottom:0;right:0;border-bottom:2.5px solid var(--sprout);border-right:2.5px solid var(--sprout);}
+  .framed.on-dark::before,.framed.on-dark::after{border-color:var(--sprout-light);}
+  .framed:hover::before,.framed:hover::after,
+  .framed.is-visible::before,.framed.is-visible::after{width:28px;height:28px;}
+  .framed.small::before,.framed.small::after{width:10px;height:10px;}
+  .framed.small:hover::before,.framed.small:hover::after,
+  .framed.small.is-visible::before,.framed.small.is-visible::after{width:18px;height:18px;}
+ 
+  /* ---------- Reveal-on-scroll ---------- */
+  [data-reveal]{opacity:0;transform:translateY(22px);transition:opacity .7s ease, transform .7s ease;}
+  [data-reveal].is-visible{opacity:1;transform:translateY(0);}
+  [data-reveal-delay="1"]{transition-delay:.08s;}
+  [data-reveal-delay="2"]{transition-delay:.16s;}
+  [data-reveal-delay="3"]{transition-delay:.24s;}
+  [data-reveal-delay="4"]{transition-delay:.32s;}
+  @media (prefers-reduced-motion: reduce){
+    [data-reveal]{opacity:1!important;transform:none!important;transition:none!important;}
+    .framed::before,.framed::after{transition:none!important;}
+  }
+ 
+  /* ---------- Nav ---------- */
+  .nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    padding:22px 0;transition:background .35s ease, padding .35s ease, box-shadow .35s ease;
+  }
+  .nav.scrolled{background:rgba(244,241,232,0.92);backdrop-filter:blur(8px);padding:14px 0;box-shadow:0 1px 0 var(--line);}
+  .nav .wrap{display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-weight:600;font-size:18px;letter-spacing:0.01em;color:var(--canopy);}
+  .brand svg{width:30px;height:30px;}
+  .nav-links{display:flex;align-items:center;gap:36px;}
+  .nav-links a{font-size:14.5px;font-weight:500;position:relative;padding:4px 0;}
+  .nav-links a::after{content:'';position:absolute;left:0;bottom:-2px;width:0;height:1.5px;background:var(--sprout);transition:width .25s ease;}
+  .nav-links a:hover::after{width:100%;}
+  .btn{
+    font-family:var(--sans);font-weight:600;font-size:14.5px;padding:11px 22px;border-radius:3px;
+    display:inline-flex;align-items:center;gap:8px;transition:transform .25s ease, box-shadow .25s ease, background .25s ease;
+  }
+  .btn-primary{background:var(--canopy);color:var(--pavement);}
+  .btn-primary:hover{background:var(--canopy-deep);transform:translateY(-2px);box-shadow:0 8px 20px -8px rgba(28,61,46,0.5);}
+  .btn-ghost{border:1.5px solid var(--canopy);color:var(--canopy);}
+  .btn-ghost:hover{background:var(--canopy);color:var(--pavement);}
+  .btn-on-dark.btn-ghost{border-color:var(--pavement);color:var(--pavement);}
+  .btn-on-dark.btn-ghost:hover{background:var(--pavement);color:var(--canopy);}
+  .menu-toggle{display:none;width:30px;height:24px;position:relative;}
+  .menu-toggle span{position:absolute;left:0;right:0;height:2px;background:var(--canopy);transition:transform .3s ease, opacity .3s ease;}
+  .menu-toggle span:nth-child(1){top:0;}
+  .menu-toggle span:nth-child(2){top:11px;}
+  .menu-toggle span:nth-child(3){top:22px;}
+  .menu-toggle.open span:nth-child(1){transform:translateY(11px) rotate(45deg);}
+  .menu-toggle.open span:nth-child(2){opacity:0;}
+  .menu-toggle.open span:nth-child(3){transform:translateY(-11px) rotate(-45deg);}
+  .nav.menu-open .brand{color:var(--pavement);}
+  .nav.menu-open .menu-toggle span{background:var(--pavement);}
+ 
+  /* ---------- Hero ---------- */
+  .hero{
+    min-height:100vh;display:flex;flex-direction:column;justify-content:center;position:relative;
+    padding:140px 0 80px;overflow:hidden;
+  }
+  .hero-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:60px;align-items:center;}
+  .hero h1{font-size:clamp(40px,5.4vw,72px);line-height:1.05;margin-bottom:26px;}
+  .hero h1 .accent{color:var(--sprout);}
+  .hero p.lede{font-size:19px;color:var(--ink-soft);max-width:480px;margin-bottom:36px;}
+  .hero-cta{display:flex;gap:16px;flex-wrap:wrap;}
+  .word{display:inline-block;opacity:0;transform:translateY(16px);animation:wordUp .7s cubic-bezier(.2,.8,.2,1) forwards;}
+  @keyframes wordUp{to{opacity:1;transform:translateY(0);}}
+ 
+  .hero-art{position:relative;aspect-ratio:1/1;max-width:480px;}
+  .hero-art svg{width:100%;height:100%;}
+  .scroll-cue{
+    position:absolute;bottom:28px;left:50%;transform:translateX(-50%);
+    display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--ink-soft);
+    font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:0;
+    animation:fadeIn .8s ease 1.6s forwards;
+  }
+  .scroll-cue .line{width:1px;height:28px;background:var(--ink-soft);overflow:hidden;position:relative;}
+  .scroll-cue .line::after{content:'';position:absolute;top:-100%;left:0;width:100%;height:100%;background:var(--sprout);animation:scrollLine 1.8s ease-in-out infinite;}
+  @keyframes scrollLine{0%{top:-100%;}50%{top:0;}100%{top:100%;}}
+  @keyframes fadeIn{to{opacity:1;}}
+ 
+  /* ---------- Section base ---------- */
+  section{padding:120px 0;}
+  .section-head{max-width:640px;margin-bottom:64px;}
+  .section-head h2{font-size:clamp(30px,3.6vw,44px);line-height:1.15;}
+  .section-head p{color:var(--ink-soft);font-size:17px;margin-top:16px;}
+  .on-dark{background:var(--canopy);color:var(--pavement);}
+  .on-dark h2,.on-dark h3{color:var(--pavement);}
+  .on-dark .section-head p{color:#BFD0C2;}
+  .alt-bg{background:var(--concrete);}
+ 
+  /* ---------- Mission band ---------- */
+  .mission{padding:140px 0;text-align:center;position:relative;}
+  .mission blockquote{
+    font-family:var(--serif);font-size:clamp(26px,3.4vw,42px);line-height:1.3;font-weight:500;
+    max-width:880px;margin:0 auto;color:var(--canopy);
+  }
+  .mission blockquote .accent{color:var(--sprout);}
+ 
+  /* ---------- Problem stats ---------- */
+  .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;}
+  .stat-card{padding:34px 30px 30px;}
+  .stat-card .num{font-family:var(--serif);font-size:46px;color:var(--canopy);font-weight:600;}
+  .stat-card .num .unit{font-size:24px;color:var(--sprout);}
+  .stat-card p{margin-top:10px;color:var(--ink-soft);font-size:15px;}
+  .source-note{margin-top:36px;font-size:13px;color:var(--ink-soft);font-family:var(--mono);}
+ 
+  /* ---------- Process ---------- */
+  .process-list{display:grid;grid-template-columns:repeat(4,1fr);gap:30px;}
+  .process-step{padding:30px 26px;}
+  .process-step .step-num{font-family:var(--mono);font-size:13px;color:var(--sprout);letter-spacing:.1em;margin-bottom:18px;display:block;}
+  .process-step h3{font-size:21px;margin-bottom:10px;}
+  .process-step p{color:var(--ink-soft);font-size:15px;}
+ 
+  /* ---------- Case study ---------- */
+  .case{display:grid;grid-template-columns:0.9fr 1.1fr;gap:64px;align-items:center;}
+  .case-art{position:relative;}
+  .case-art svg{width:100%;}
+  .case-copy .eyebrow{color:var(--brass);}
+  .case-copy .eyebrow::before{background:var(--brass);}
+  .case-copy h2{font-size:clamp(28px,3.2vw,38px);margin-bottom:20px;}
+  .case-copy p{color:var(--ink-soft);font-size:16.5px;margin-bottom:16px;}
+  .case-stats{display:flex;gap:36px;margin-top:28px;}
+  .case-stats div b{display:block;font-family:var(--serif);font-size:28px;color:var(--canopy);}
+  .case-stats div span{font-size:13px;color:var(--ink-soft);}
+ 
+  /* ---------- Goals (impact) ---------- */
+  .goals-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:30px;margin-top:20px;}
+  .goal-card{padding:30px 24px;}
+  .goal-card .big{font-family:var(--serif);font-size:50px;font-weight:600;color:var(--sprout-light);}
+  .goal-card .big .plus{font-size:30px;}
+  .goal-card p{margin-top:8px;font-size:14.5px;color:#BFD0C2;}
+ 
+  /* ---------- Get involved ---------- */
+  .involve-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;}
+  .involve-card{padding:38px 30px;background:var(--pavement);transition:transform .35s ease, box-shadow .35s ease;}
+  .involve-card:hover{transform:translateY(-6px);box-shadow:0 24px 40px -24px rgba(28,61,46,0.25);}
+  .involve-card .ic{width:44px;height:44px;color:var(--sprout);margin-bottom:22px;}
+  .involve-card h3{font-size:21px;margin-bottom:10px;}
+  .involve-card p{color:var(--ink-soft);font-size:15px;margin-bottom:22px;}
+  .involve-card a.link{font-weight:600;font-size:14.5px;color:var(--canopy);display:inline-flex;align-items:center;gap:6px;}
+  .involve-card a.link svg{width:14px;height:14px;transition:transform .25s ease;}
+  .involve-card a.link:hover svg{transform:translateX(4px);}
+ 
+  /* ---------- Founder note ---------- */
+  .founder{display:grid;grid-template-columns:0.6fr 1.4fr;gap:48px;align-items:start;}
+  .founder-mark{width:60px;height:60px;color:var(--sprout);}
+  .founder p{font-size:18px;color:var(--ink-soft);line-height:1.7;margin-bottom:18px;}
+  .founder .sign{font-family:var(--serif);font-size:19px;color:var(--canopy);margin-top:18px;}
+ 
+  /* ---------- Newsletter ---------- */
+  .newsletter{background:var(--canopy);text-align:center;}
+  .newsletter h2{color:var(--pavement);font-size:clamp(26px,3.2vw,38px);margin-bottom:14px;}
+  .newsletter p{color:#BFD0C2;margin-bottom:34px;}
+  .nl-form{display:flex;justify-content:center;gap:12px;max-width:460px;margin:0 auto;flex-wrap:wrap;}
+  .nl-form input{
+    flex:1;min-width:220px;padding:14px 18px;border-radius:3px;border:1.5px solid #3A5C4B;
+    background:var(--canopy-deep);color:var(--pavement);font-family:var(--sans);font-size:15px;
+  }
+  .nl-form input::placeholder{color:#7FA08D;}
+  .nl-form input:focus{outline:none;border-color:var(--sprout);}
+  .nl-status{margin-top:16px;font-size:14px;color:var(--sprout-light);min-height:20px;}
+ 
+  /* ---------- Footer ---------- */
+  footer{background:var(--canopy-deep);color:#BFD0C2;padding:80px 0 30px;}
+  .footer-top{display:grid;grid-template-columns:1.4fr 0.8fr 0.8fr 0.8fr;gap:40px;padding-bottom:56px;border-bottom:1px solid #2C4B3C;}
+  .footer-brand .brand{color:var(--pavement);}
+  .footer-brand p{margin-top:16px;font-size:14.5px;max-width:280px;color:#8FAA9B;}
+  .footer-col h4{font-family:var(--sans);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#8FAA9B;margin-bottom:18px;}
+  .footer-col ul li{margin-bottom:12px;font-size:14.5px;}
+  .footer-col ul li a:hover{color:var(--sprout-light);}
+  .footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:26px;font-size:13px;color:#7FA08D;flex-wrap:wrap;gap:16px;}
+  .social{display:flex;gap:16px;}
+  .social a svg{width:18px;height:18px;color:#8FAA9B;transition:color .2s ease;}
+  .social a:hover svg{color:var(--sprout-light);}
+ 
+  /* ---------- Responsive ---------- */
+  @media (max-width:900px){
+    .nav-links{display:none;}
+    .menu-toggle{display:block;}
+    .hero-grid{grid-template-columns:1fr;}
+    .hero-art{margin:0 auto;max-width:340px;}
+    .stat-grid,.process-list,.goals-grid,.involve-grid{grid-template-columns:repeat(2,1fr);}
+    .case,.founder{grid-template-columns:1fr;}
+    .footer-top{grid-template-columns:1fr 1fr;gap:36px;}
+  }
+  @media (max-width:600px){
+    .wrap{padding:0 22px;}
+    section{padding:84px 0;}
+    .stat-grid,.process-list,.goals-grid,.involve-grid{grid-template-columns:1fr;}
+    .footer-top{grid-template-columns:1fr;}
+    .hero{padding-top:120px;}
+    .nl-form{flex-direction:column;}
+  }
+</style>
+</head>
+<body>
+ 
+<nav class="nav" id="nav">
+  <div class="wrap">
+    <a href="#top" class="brand">
+      <svg viewBox="0 0 160 160" aria-hidden="true">
+        <path d="M 44,128 C 50,108 70,92 92,84 C 86,98 84,116 78,128 C 68,134 54,132 44,128 Z" fill="#4F7A40"/>
+        <path d="M 26,38 L 26,124 Q 26,132 34,132 L 116,132" fill="none" stroke="currentColor" stroke-width="15" stroke-linecap="round"/>
+        <path d="M 30,130 C 32,98 56,72 88,52 C 100,68 98,94 82,112 C 64,130 44,133 30,130 Z" fill="#74B05D"/>
+      </svg>
+      Every Corner Green
+    </a>
+    <ul class="nav-links">
+      <li><a href="#mission">Mission</a></li>
+      <li><a href="#what-we-do">What We Do</a></li>
+      <li><a href="#impact">Year One</a></li>
+      <li><a href="#get-involved">Get Involved</a></li>
+    </ul>
+    <a href="#get-involved" class="btn btn-primary" style="display:none" id="navCta">Start a Project</a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+ 
+<!-- mobile menu -->
+<div id="mobileMenu" style="position:fixed;inset:0;background:var(--canopy);z-index:99;display:none;flex-direction:column;align-items:center;justify-content:center;gap:32px;">
+  <a href="#mission" class="mobile-link" style="color:#fff;font-family:var(--serif);font-size:28px;">Mission</a>
+  <a href="#what-we-do" class="mobile-link" style="color:#fff;font-family:var(--serif);font-size:28px;">What We Do</a>
+  <a href="#impact" class="mobile-link" style="color:#fff;font-family:var(--serif);font-size:28px;">Year One</a>
+  <a href="#get-involved" class="mobile-link" style="color:#fff;font-family:var(--serif);font-size:28px;">Get Involved</a>
+</div>
+ 
+<main id="top">
+ 
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <h1>
+          <span class="word" style="animation-delay:.05s">Every</span> <span class="word" style="animation-delay:.15s">corner</span><br>
+          <span class="word" style="animation-delay:.25s">deserves</span> <span class="word" style="animation-delay:.35s">to</span>
+          <span class="word accent" style="animation-delay:.45s">be</span> <span class="word accent" style="animation-delay:.55s">green.</span>
+        </h1>
+        <p class="lede word" style="animation-delay:.7s">We design, build, and maintain pocket parks on overlooked urban lots, block by block, for the neighborhoods that need it most, not just the ones that can already afford it.</p>
+        <div class="hero-cta word" style="animation-delay:.85s">
+          <a href="#what-we-do" class="btn btn-primary">See How It Works</a>
+          <a href="#get-involved" class="btn btn-ghost">Nominate a Corner</a>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 480 480" id="heroSvg">
+          <!-- corner bracket frame, animated draw-in -->
+          <path id="hb1" d="M 40,160 L 40,40 L 160,40" fill="none" stroke="#1C3D2E" stroke-width="10" stroke-linecap="round" stroke-dasharray="240" stroke-dashoffset="240"/>
+          <path id="hb2" d="M 320,40 L 440,40 L 440,160" fill="none" stroke="#1C3D2E" stroke-width="10" stroke-linecap="round" stroke-dasharray="240" stroke-dashoffset="240"/>
+          <path id="hb3" d="M 40,320 L 40,440 L 160,440" fill="none" stroke="#1C3D2E" stroke-width="10" stroke-linecap="round" stroke-dasharray="240" stroke-dashoffset="240"/>
+          <path id="hb4" d="M 440,320 L 440,440 L 320,440" fill="none" stroke="#74B05D" stroke-width="10" stroke-linecap="round" stroke-dasharray="240" stroke-dashoffset="240"/>
+          <g id="heroLeaf" opacity="0" transform="translate(240,240) scale(0.5)">
+            <path d="M -30,40 C -10,-10 40,-40 90,-55 C 80,-20 75,25 50,55 C 15,85 -15,70 -30,40 Z" fill="#74B05D"/>
+            <path d="M -22,33 Q 20,-10 75,-45" fill="none" stroke="#1C3D2E" stroke-width="3" opacity="0.5"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+    <div class="scroll-cue"><span>Scroll</span><div class="line"></div></div>
+  </section>
+ 
+  <!-- MISSION -->
+  <section class="mission" id="mission">
+    <div class="wrap">
+      <blockquote data-reveal>
+        Green space shouldn't depend on your zip code. It should be standard: <span class="accent">on every corner, in every neighborhood.</span>
+      </blockquote>
+    </div>
+  </section>
+ 
+  <!-- PROBLEM -->
+  <section class="alt-bg">
+    <div class="wrap">
+      <div class="section-head" data-reveal>
+        <span class="eyebrow">The Problem</span>
+        <h2>Green space in cities is not evenly shared.</h2>
+        <p>Tree canopy and park access tend to track closely with income, often dropping off sharply just a few blocks from where they're abundant. The gaps usually aren't empty land; they're vacant lots, dead-end corners, and forgotten margins waiting for a reason to be used.</p>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card framed" data-reveal data-reveal-delay="1">
+          <div class="num">2.7<span class="unit">×</span></div>
+          <p>more tree canopy in higher-income neighborhoods than in lower-income ones, in many U.S. cities.</p>
+        </div>
+        <div class="stat-card framed" data-reveal data-reveal-delay="2">
+          <div class="num">100<span class="unit">M+</span></div>
+          <p>people in the U.S. don't have a park within a 10-minute walk of home.</p>
+        </div>
+        <div class="stat-card framed" data-reveal data-reveal-delay="3">
+          <div class="num">7<span class="unit">°F</span></div>
+          <p>hotter on average in low-canopy neighborhoods during summer heat waves.</p>
+        </div>
+      </div>
+      <p class="source-note" data-reveal>General patterns drawn from published urban forestry &amp; park-access research, not specific to any one city.</p>
+    </div>
+  </section>
+ 
+  <!-- WHAT WE DO -->
+  <section id="what-we-do">
+    <div class="wrap">
+      <div class="section-head" data-reveal>
+        <span class="eyebrow">What We Do</span>
+        <h2>From dead corner to pocket park, in four steps.</h2>
+        <p>The same disciplined process, whether it's a single neglected lot or a citywide program.</p>
+      </div>
+      <div class="process-list">
+        <div class="process-step framed small" data-reveal data-reveal-delay="1">
+          <span class="step-num">01 / ASSESS</span>
+          <h3>Find the corner</h3>
+          <p>We map underused lots, dead ends, and easements with residents and city data together.</p>
+        </div>
+        <div class="process-step framed small" data-reveal data-reveal-delay="2">
+          <span class="step-num">02 / DESIGN</span>
+          <h3>Design with the block</h3>
+          <p>Every layout is shaped by the people who'll actually use it, not a template dropped in from outside.</p>
+        </div>
+        <div class="process-step framed small" data-reveal data-reveal-delay="3">
+          <span class="step-num">03 / BUILD</span>
+          <h3>Build it in weeks</h3>
+          <p>Native planting, seating, and shade, sized to fit a pocket lot, not a budget for a stadium.</p>
+        </div>
+        <div class="process-step framed small" data-reveal data-reveal-delay="4">
+          <span class="step-num">04 / GROW</span>
+          <h3>Maintain &amp; grow</h3>
+          <p>We stay on after the ribbon-cutting, with a maintenance plan the neighborhood can sustain.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- CASE STUDY -->
+  <section class="alt-bg">
+    <div class="wrap case">
+      <div class="case-art" data-reveal>
+        <img src="ECGwebpic.jpg" alt="Before and after: vacant lot turned into a pocket park" style="width:100%;border-radius:6px;display:block;">
+      </div>
+      <div class="case-copy" data-reveal data-reveal-delay="1">
+        <span class="eyebrow">Featured Corner</span>
+        <h2>A dead end becomes the block's front yard.</h2>
+        <p>This corner sat empty and unused for over a decade: a dumping spot, not a destination. We worked with 60 volunteers across Montgomery County, MD to turn it into a shared green with seating, a garden, and shade trees that will mature with the neighborhood.</p>
+        <p>It's the model for every corner we take on: small footprint, fast build, designed by the people who will use it.</p>
+        <div class="case-stats">
+          <div><b>2,000 sq ft</b><span>reclaimed</span></div>
+          <div><b>60 young people</b><span>co-designed it</span></div>
+          <div><b>$1,750</b><span>of donations</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- IMPACT / GOALS -->
+  <section class="on-dark" id="impact">
+    <div class="wrap">
+      <div class="section-head" data-reveal>
+        <span class="eyebrow">Year One, 2026</span>
+        <h2>We're just getting started. Here's what we're building toward.</h2>
+        <p>Every Corner Green launched in 2026. These are our goals for the first year: not a victory lap, a worksheet.</p>
+      </div>
+      <div class="goals-grid">
+        <div class="goal-card framed on-dark" data-reveal data-reveal-delay="1">
+          <div class="big" data-count="5" data-suffix="">0</div>
+          <p>corners broken ground on</p>
+        </div>
+        <div class="goal-card framed on-dark" data-reveal data-reveal-delay="2">
+          <div class="big" data-count="5" data-suffix="">0</div>
+          <p>neighborhoods, across income levels</p>
+        </div>
+        <div class="goal-card framed on-dark" data-reveal data-reveal-delay="3">
+          <div class="big" data-count="100" data-suffix="<span class='plus'>%</span>">0</div>
+          <p>resident-led design, every time</p>
+        </div>
+        <div class="goal-card framed on-dark" data-reveal data-reveal-delay="4">
+          <div class="big" data-count="5000" data-suffix="">$0</div>
+          <p>Year One fundraising goal</p>
+        </div>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- GET INVOLVED -->
+  <section id="get-involved">
+    <div class="wrap">
+      <div class="section-head" data-reveal>
+        <span class="eyebrow">Get Involved</span>
+        <h2>However you show up, there's a corner for you.</h2>
+      </div>
+      <div class="involve-grid">
+        <div class="involve-card framed" data-reveal data-reveal-delay="1">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-4.5-7-10a7 7 0 0114 0c0 5.5-7 10-7 10z"/><circle cx="12" cy="11" r="2.5"/></svg>
+          <h3>Neighbors</h3>
+          <p>Know a corner that's been empty too long? Nominate it and help shape what goes there.</p>
+          <a href="#" class="link">Nominate a corner <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+        <div class="involve-card framed" data-reveal data-reveal-delay="2">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6"/></svg>
+          <h3>Cities &amp; Developers</h3>
+          <p>Bring pocket parks into a development plan or a citywide greening program.</p>
+          <a href="#" class="link">Start a project <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+        <div class="involve-card framed" data-reveal data-reveal-delay="3">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1 3-6z"/></svg>
+          <h3>Partners &amp; Funders</h3>
+          <p>Help fund the Year One goal and get your name on the corners it builds.</p>
+          <a href="#" class="link">Become a partner <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- FOUNDER NOTE -->
+  <section class="alt-bg">
+    <div class="wrap founder">
+      <svg class="founder-mark" viewBox="0 0 160 160" data-reveal>
+        <path d="M 44,128 C 50,108 70,92 92,84 C 86,98 84,116 78,128 C 68,134 54,132 44,128 Z" fill="#4F7A40"/>
+        <path d="M 26,38 L 26,124 Q 26,132 34,132 L 116,132" fill="none" stroke="#1C3D2E" stroke-width="15" stroke-linecap="round"/>
+        <path d="M 30,130 C 32,98 56,72 88,52 C 100,68 98,94 82,112 C 64,130 44,133 30,130 Z" fill="#74B05D"/>
+      </svg>
+      <div data-reveal data-reveal-delay="1">
+        <span class="eyebrow">Why We Started This</span>
+        <p>We didn't start Every Corner Green because we had the answer to climate change. We started it because there was an empty field in our neighborhood, and a beautiful park ten minutes from the other, and no good reason for the gap.</p>
+        <p>Every corner we take on is small. The pattern, repeated enough times, isn't.</p>
+        <p class="sign">The Every Corner Green team</p>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- NEWSLETTER -->
+  <section class="newsletter">
+    <div class="wrap">
+      <h2 data-reveal>Follow along as we break ground.</h2>
+      <p data-reveal data-reveal-delay="1">One email a month. New corners, before/afters, no spam.</p>
+      <form class="nl-form" id="nlForm" data-reveal data-reveal-delay="2">
+        <input type="email" required placeholder="you@email.com" id="nlEmail" aria-label="Email address">
+        <button type="submit" class="btn btn-primary">Sign Up</button>
+      </form>
+      <div class="nl-status" id="nlStatus"></div>
+    </div>
+  </section>
+ 
+</main>
+ 
+<footer>
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#top" class="brand">
+          <svg viewBox="0 0 160 160" aria-hidden="true">
+            <path d="M 44,128 C 50,108 70,92 92,84 C 86,98 84,116 78,128 C 68,134 54,132 44,128 Z" fill="#5C8F4A"/>
+            <path d="M 26,38 L 26,124 Q 26,132 34,132 L 116,132" fill="none" stroke="#F4F1E8" stroke-width="15" stroke-linecap="round"/>
+            <path d="M 30,130 C 32,98 56,72 88,52 C 100,68 98,94 82,112 C 64,130 44,133 30,130 Z" fill="#8FCB72"/>
+          </svg>
+          Every Corner Green
+        </a>
+        <p>Pocket parks for every neighborhood, one corner at a time. Est. 2026.</p>
+        <div class="social" style="margin-top:24px;">
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+          <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="8" y1="11" x2="8" y2="17"/><line x1="8" y1="7.5" x2="8" y2="7.6"/><line x1="12" y1="17" x2="12" y2="11"/><path d="M12 13.5c0-1.5 1-2.5 2.5-2.5S17 12 17 13.5V17"/></svg></a>
+          <a href="#" aria-label="X"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="#mission">Mission</a></li>
+          <li><a href="#what-we-do">What We Do</a></li>
+          <li><a href="#impact">Year One</a></li>
+          <li><a href="#get-involved">Get Involved</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:hello@everycornergreen.com">hello@everycornergreen.com</a></li>
+          <li><a href="tel:+10000000000">(000) 000-0000</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> Every Corner Green. Est. 2026.</span>
+      <span>Designed for every block.</span>
+    </div>
+  </div>
+</footer>
+ 
+<script>
+  // year
+  document.getElementById('year').textContent = new Date().getFullYear();
+ 
+  // nav scroll state
+  const nav = document.getElementById('nav');
+  const navCta = document.getElementById('navCta');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 40) { nav.classList.add('scrolled'); navCta.style.display='inline-flex'; }
+    else { nav.classList.remove('scrolled'); navCta.style.display='none'; }
+  });
+ 
+  // mobile menu
+  const toggle = document.getElementById('menuToggle');
+  const mobileMenu = document.getElementById('mobileMenu');
+  toggle.addEventListener('click', () => {
+    const open = toggle.classList.toggle('open');
+    mobileMenu.style.display = open ? 'flex' : 'none';
+    nav.classList.toggle('menu-open', open);
+  });
+  document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click', () => {
+    toggle.classList.remove('open'); mobileMenu.style.display='none';
+  }));
+ 
+  // hero corner-bracket draw-in
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function animateHero(){
+    if(reduceMotion){
+      document.getElementById('heroLeaf').setAttribute('opacity','1');
+      return;
+    }
+    const brackets = ['hb1','hb2','hb3','hb4'];
+    brackets.forEach((id,i)=>{
+      const el = document.getElementById(id);
+      el.style.transition = 'stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1)';
+      setTimeout(()=>{ el.style.strokeDashoffset = '0'; }, 300 + i*120);
+    });
+    const leaf = document.getElementById('heroLeaf');
+    leaf.style.transition = 'opacity .8s ease, transform .8s cubic-bezier(.2,.8,.2,1)';
+    setTimeout(()=>{
+      leaf.setAttribute('opacity','1');
+      leaf.setAttribute('transform','translate(240,240) scale(1)');
+    }, 950);
+  }
+  window.addEventListener('DOMContentLoaded', animateHero);
+ 
+  // scroll reveal
+  const revealEls = document.querySelectorAll('[data-reveal]');
+  if('IntersectionObserver' in window && !reduceMotion){
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, {threshold:0.15});
+    revealEls.forEach(el=>io.observe(el));
+  } else {
+    revealEls.forEach(el=>el.classList.add('is-visible'));
+  }
+ 
+  // count-up stats
+  const counters = document.querySelectorAll('[data-count]');
+  function animateCount(el){
+    const target = parseFloat(el.getAttribute('data-count'));
+    const suffix = el.getAttribute('data-suffix') || '';
+    const isMoney = el.textContent.trim().startsWith('$');
+    const duration = 1400;
+    const start = performance.now();
+    function tick(now){
+      const p = Math.min((now-start)/duration, 1);
+      const eased = 1 - Math.pow(1-p, 3);
+      const val = Math.round(target*eased);
+      el.innerHTML = (isMoney ? '$' : '') + val.toLocaleString() + suffix;
+      if(p<1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+  if('IntersectionObserver' in window){
+    const ioCount = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          animateCount(entry.target);
+          ioCount.unobserve(entry.target);
+        }
+      });
+    }, {threshold:0.4});
+    counters.forEach(el=>ioCount.observe(el));
+  } else {
+    counters.forEach(animateCount);
+  }
+ 
+  // newsletter fake-submit (no backend wired up)
+  document.getElementById('nlForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const status = document.getElementById('nlStatus');
+    const email = document.getElementById('nlEmail').value;
+    status.textContent = `Thanks! We'll send updates to ${email}.`;
+    this.reset();
+  });
+</script>
+ 
+</body>
+</html>
